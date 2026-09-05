@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuickCompare - Real-time Quick-Commerce Comparison</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <div class="header-content">
+      <a href="#" class="logo">
+        <i class="fa-solid fa-bolt"></i>
+        <span>PriceMatch</span>
+      </a>
+      
+      <div class="search-box">
+        <div class="search-inner">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="searchInput" placeholder="Search products (press Enter)..." autocomplete="off" />
+          <button id="searchBtn">Search</button>
+        </div>
+      </div>
+
+      <div class="source-badge" id="sourceBadge">
+        <i class="fa-solid fa-signal"></i>
+        <span id="sourceText">Live API Mode</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-container">
+    <!-- Sidebar Filters -->
+    <aside class="sidebar">
+      <div class="filter-group">
+        <div class="filter-title">Quick Delivery Platforms</div>
+        <div class="filter-list" id="platformFilters">
+          <label class="filter-item">
+            <span class="filter-label"><input type="checkbox" value="Zepto" class="filter-platform" checked> Zepto</span>
+          </label>
+          <label class="filter-item">
+            <span class="filter-label"><input type="checkbox" value="Blinkit" class="filter-platform" checked> Blinkit</span>
+          </label>
+          <label class="filter-item">
+            <span class="filter-label"><input type="checkbox" value="Instamart" class="filter-platform" checked> Instamart</span>
+          </label>
+          <label class="filter-item">
+            <span class="filter-label"><input type="checkbox" value="BigBasket" class="filter-platform" checked> BigBasket</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <div class="filter-title">Max Price (₹)</div>
+        <div class="price-inputs">
+          <input type="number" id="maxPriceInput" placeholder="e.g. 500" min="0">
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <div class="filter-title">Availability</div>
+        <div class="filter-list">
+          <label class="filter-item">
+            <span class="filter-label"><input type="checkbox" id="inStockOnly"> In Stock Only</span>
+          </label>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Results View -->
+    <main class="content-area">
+      <div class="toolbar">
+        <div class="results-info" id="resultsCount">Type query & press <b>Enter</b> to fetch live prices</div>
+        <select class="sort-select" id="sortSelect">
+          <option value="relevance">Sort: Relevance</option>
+          <option value="price_asc">Price: Low to High</option>
+          <option value="price_desc">Price: High to Low</option>
+          <option value="discount_desc">Highest Discount</option>
+        </select>
+      </div>
+
+      <div id="statusContainer"></div>
+      <div class="product-grid" id="productGrid"></div>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

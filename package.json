@@ -1,0 +1,27 @@
+{
+  "name": "quickcompare",
+  "version": "1.0.0",
+  "description": "Quick-Commerce Price Comparison Engine — spot, search & compare live prices across Blinkit, Zepto, Swiggy Instamart and BigBasket.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [
+    "quick-commerce",
+    "price-comparison",
+    "blinkit",
+    "zepto",
+    "instamart",
+    "bigbasket"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "cheerio": "^1.2.0",
+    "dotenv": "^16.6.1",
+    "express": "^4.19.2"
+  }
+}
