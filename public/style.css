@@ -127,6 +127,39 @@ header {
   color: #92400e; 
 }
 
+.comparison-intro {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  background: linear-gradient(120deg, #eff6ff, #ffffff 75%);
+  border: 1px solid #dbeafe;
+  border-radius: 12px;
+}
+
+.comparison-icon {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: #dbeafe;
+  color: var(--primary);
+  font-size: 20px;
+}
+
+.comparison-intro h1 {
+  margin-bottom: 4px;
+  font-size: 20px;
+}
+
+.comparison-intro p {
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
 /* Main Layout */
 .app-container { 
   max-width: 1280px; 
@@ -295,6 +328,14 @@ header {
 .platform-blinkit { background: #d97706; }
 .platform-instamart { background: var(--instamart); }
 .platform-bigbasket { background: var(--bigbasket); }
+.platform-amazon { background: #232f3e; }
+.platform-flipkart { background: #2874f0; }
+.platform-myntra { background: #ff3f6c; }
+.platform-ajio { background: #2c4152; }
+.platform-croma { background: #1d7b3e; }
+.platform-reliance-digital { background: #17479e; }
+.platform-tata-cliq { background: #4b286d; }
+.platform-nykaa { background: #fc2779; }
 
 .card-img { 
   width: 100%; 
@@ -366,6 +407,11 @@ header {
   border-color: #bfdbfe; 
 }
 
+.card-btn i {
+  margin-left: 4px;
+  font-size: 11px;
+}
+
 /* Empty / Status States */
 .status-box { 
   background: var(--surface); 
@@ -383,10 +429,25 @@ header {
 }
 
 @media (max-width: 768px) {
+  .header-content {
+    flex-wrap: wrap;
+  }
+  .search-box {
+    order: 3;
+    flex-basis: 100%;
+    max-width: none;
+  }
+  .source-badge {
+    margin-left: auto;
+  }
   .app-container { 
     grid-template-columns: 1fr; 
   }
   .sidebar { 
     position: static; 
+  }
+  .comparison-intro {
+    align-items: flex-start;
+    padding: 16px;
   }
 }

@@ -3,7 +3,10 @@ const state = {
   rawItems: [],
   filteredItems: [],
   filters: {
-    platforms: new Set(['Zepto', 'Blinkit', 'Instamart', 'BigBasket']),
+    platforms: new Set([
+      'Zepto', 'Blinkit', 'Instamart', 'BigBasket', 'Amazon', 'Flipkart',
+      'Myntra', 'Ajio', 'Croma', 'Reliance Digital', 'Tata CLiQ', 'Nykaa'
+    ]),
     maxPrice: null,
     inStockOnly: false
   },
@@ -20,6 +23,8 @@ const sortSelect = document.getElementById('sortSelect');
 const maxPriceInput = document.getElementById('maxPriceInput');
 const inStockOnly = document.getElementById('inStockOnly');
 const platformCheckboxes = document.querySelectorAll('.filter-platform');
+const sourceText = document.getElementById('sourceText');
+const sourceBadge = document.getElementById('sourceBadge');
 
 // Key Event Listener: Trigger API call on Enter key press
 searchInput.addEventListener('keydown', (e) => {
@@ -41,11 +46,14 @@ async function executeApiSearch() {
     return;
   }
 
-  showStatus('loading', `Fetching real-time results for "${query}"...`);
+  showStatus('loading', `Searching stores for "${query}"...`);
   productGrid.innerHTML = '';
 
   try {
     const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+    if (!response.ok) {
+      throw new Error(`Search request failed with status ${response.status}`);
+    }
     const data = await response.json();
 
     if (data.error) {
@@ -53,9 +61,12 @@ async function executeApiSearch() {
       return;
     }
 
+    const isLive = data.meta?.source === 'live';
+    sourceText.textContent = isLive ? 'Live store prices' : 'Sample prices';
+    sourceBadge.classList.toggle('is-mock', !isLive);
     state.rawItems = data.items || [];
     if (state.rawItems.length === 0) {
-      showStatus('info', `No quick-commerce items found for "${query}".`);
+      showStatus('info', `No store listings found for "${query}".`);
       resultsCount.innerHTML = 'Showing <em>0</em> results';
       return;
     }
@@ -64,7 +75,7 @@ async function executeApiSearch() {
     applyFiltersAndRender();
   } catch (err) {
     console.error(err);
-    showStatus('error', 'Server error while fetching quick-delivery items.');
+    showStatus('error', 'Server error while searching online stores.');
   }
 }
 
@@ -95,13 +106,14 @@ function applyFiltersAndRender() {
   }
 
   state.filteredItems = result;
-  resultsCount.innerHTML = `Showing <em>${result.length}</em> of ${state.rawItems.length} items`;
+  const storeCount = new Set(result.map((item) => item.platform)).size;
+  resultsCount.innerHTML = `Showing <em>${result.length}</em> of ${state.rawItems.length} offers across <em>${storeCount}</em> stores`;
   renderGrid(result);
 }
 
 function renderGrid(items) {
   if (items.length === 0) {
-    showStatus('info', 'No products match your active sidebar filters.');
+    showStatus('info', 'No offers match your active filters. Try selecting more stores.');
     productGrid.innerHTML = '';
     return;
   }
@@ -109,28 +121,62 @@ function renderGrid(items) {
 
   productGrid.innerHTML = items.map(item => `
     <div class="card">
-      <span class="platform-tag platform-${item.platform.toLowerCase()}">${item.platform}</span>
-      <img class="card-img" src="${item.image || 'https://via.placeholder.com/140'}" alt="${item.name}" loading="lazy">
-      <div class="card-title" title="${item.name}">${item.name}</div>
-      <div class="card-meta">${item.quantity || '1 unit'} • ⏱️ ${item.eta || '10-15 mins'}</div>
+      <span class="platform-tag platform-${escapeHtml(item.platform.toLowerCase().replace(/[^a-z0-9-]/g, '-'))}">${escapeHtml(item.platform)}</span>
+      <img class="card-img" src="${safeImageUrl(item.image)}" alt="${escapeHtml(item.name)}" loading="lazy">
+      <div class="card-title" title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</div>
+      <div class="card-meta">${escapeHtml(item.quantity || '1 unit')} • ${escapeHtml(item.eta || '10-15 mins')}</div>
       <div class="card-price-row">
-        <span class="price-current">₹${item.price}</span>
-        ${item.originalPrice > item.price ? `<span class="price-original">₹${item.originalPrice}</span>` : ''}
-        ${item.discount > 0 ? `<span class="price-discount">${item.discount}% OFF</span>` : ''}
+        <span class="price-current">₹${formatPrice(item.price)}</span>
+        ${item.originalPrice > item.price ? `<span class="price-original">₹${formatPrice(item.originalPrice)}</span>` : ''}
+        ${item.discount > 0 ? `<span class="price-discount">${formatPrice(item.discount)}% OFF</span>` : ''}
       </div>
-      <a href="${item.productUrl}" target="_blank" rel="noopener noreferrer" class="card-btn">Buy Now</a>
+      <a href="${safeProductUrl(item.productUrl)}" target="_blank" rel="noopener noreferrer" class="card-btn">View at ${escapeHtml(item.platform)} <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
     </div>
   `).join('');
+}
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, (character) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  })[character]);
+}
+
+function safeProductUrl(value) {
+  try {
+    const url = new URL(value);
+    return url.protocol === 'https:' || url.protocol === 'http:' ? escapeHtml(url.href) : '#';
+  } catch {
+    return '#';
+  }
+}
+
+function safeImageUrl(value) {
+  const fallback = 'https://via.placeholder.com/140';
+  try {
+    const url = new URL(value || fallback, window.location.origin);
+    return url.protocol === 'https:' || url.protocol === 'http:' ? escapeHtml(url.href) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function formatPrice(value) {
+  const price = Number(value);
+  return Number.isFinite(price) ? price.toLocaleString('en-IN') : '—';
 }
 
 // Helper functions for Status Display
 function showStatus(type, message) {
   if (type === 'loading') {
-    statusContainer.innerHTML = `<div class="status-box"><i class="fa-solid fa-spinner fa-spin"></i><p>${message}</p></div>`;
+    statusContainer.innerHTML = `<div class="status-box"><i class="fa-solid fa-spinner fa-spin"></i><p>${escapeHtml(message)}</p></div>`;
   } else if (type === 'error') {
-    statusContainer.innerHTML = `<div class="status-box"><i class="fa-solid fa-circle-exclamation" style="color:#ef4444"></i><p>${message}</p></div>`;
+    statusContainer.innerHTML = `<div class="status-box"><i class="fa-solid fa-circle-exclamation" style="color:#ef4444"></i><p>${escapeHtml(message)}</p></div>`;
   } else {
-    statusContainer.innerHTML = `<div class="status-box"><i class="fa-solid fa-magnifying-glass"></i><p>${message}</p></div>`;
+    statusContainer.innerHTML = `<div class="status-box"><i class="fa-solid fa-magnifying-glass"></i><p>${escapeHtml(message)}</p></div>`;
   }
 }
 

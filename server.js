@@ -9,6 +9,9 @@ const path = require('path');
 
 const PORT = Number(process.env.PORT) || 3000;
 const SERPAPI_KEY = (process.env.SERPAPI_KEY || '').trim();
+const PRODUCT_RESULT_LIMIT = 100;
+const SERPAPI_PAGE_SIZE = 50;
+const SERPAPI_MAX_PAGES = 2;
 
 const app = express();
 app.use(express.static(path.join(__dirname, 'public')));
@@ -16,8 +19,31 @@ app.use(express.static(path.join(__dirname, 'public')));
 const OFFICIAL_SITE_MAP = {
   Blinkit: 'https://blinkit.com/',
   Zepto: 'https://www.zepto.com/',
-  Instamart: 'https://instamart.in',
-  BigBasket: 'https://www.bigbasket.com/'
+  Instamart: 'https://www.swiggy.com/instamart',
+  BigBasket: 'https://www.bigbasket.com/',
+  Amazon: 'https://www.amazon.in/',
+  Flipkart: 'https://www.flipkart.com/',
+  Myntra: 'https://www.myntra.com/',
+  Ajio: 'https://www.ajio.com/',
+  Croma: 'https://www.croma.com/',
+  'Reliance Digital': 'https://www.reliancedigital.in/',
+  'Tata CLiQ': 'https://www.tatacliq.com/',
+  Nykaa: 'https://www.nykaa.com/'
+};
+
+const PLATFORM_DOMAINS = {
+  Blinkit: ['blinkit.com'],
+  Zepto: ['zepto.com'],
+  Instamart: ['swiggy.com'],
+  BigBasket: ['bigbasket.com'],
+  Amazon: ['amazon.in', 'amazon.com'],
+  Flipkart: ['flipkart.com'],
+  Myntra: ['myntra.com'],
+  Ajio: ['ajio.com'],
+  Croma: ['croma.com'],
+  'Reliance Digital': ['reliancedigital.in'],
+  'Tata CLiQ': ['tatacliq.com'],
+  Nykaa: ['nykaa.com']
 };
 
 function buildOfficialProductUrl(platform, query, productName) {
@@ -30,9 +56,25 @@ function buildOfficialProductUrl(platform, query, productName) {
     case 'Zepto':
       return `https://www.zepto.com/search?query=${encoded}`;
     case 'Instamart':
-      return `https://instamart.in/search?query=${encoded}`;
+      return `https://www.swiggy.com/instamart/search?query=${encoded}`;
     case 'BigBasket':
       return `https://www.bigbasket.com/ps/?q=${encoded}`;
+    case 'Amazon':
+      return `https://www.amazon.in/s?k=${encoded}`;
+    case 'Flipkart':
+      return `https://www.flipkart.com/search?q=${encoded}`;
+    case 'Myntra':
+      return `https://www.myntra.com/search?rawQuery=${encoded}`;
+    case 'Ajio':
+      return `https://www.ajio.com/search/?text=${encoded}`;
+    case 'Croma':
+      return `https://www.croma.com/searchB?q=${encoded}`;
+    case 'Reliance Digital':
+      return `https://www.reliancedigital.in/search?q=${encoded}`;
+    case 'Tata CLiQ':
+      return `https://www.tatacliq.com/search/?searchCategory=all&text=${encoded}`;
+    case 'Nykaa':
+      return `https://www.nykaa.com/search/result/?q=${encoded}`;
     default:
       return `https://www.google.com/search?q=${encoded}`;
   }
@@ -140,20 +182,16 @@ function resolveOfficialUrl(raw, platform, query) {
     return fallback;
   }
 
-  const normalized = candidate.toLowerCase();
-  const isGenericSearch = normalized.includes('google.com') || normalized.includes('serpapi.com') || normalized.includes('bing.com');
-  const isOfficialMarketplace = normalized.includes('blinkit.com') || normalized.includes('zepto.com') || normalized.includes('swiggy.com') || normalized.includes('bigbasket.com');
-
-  if (isGenericSearch || !isOfficialMarketplace) {
-    return fallback;
-  }
-
   try {
     const parsed = new URL(candidate);
+    const hostname = parsed.hostname.toLowerCase();
+    const allowedDomains = PLATFORM_DOMAINS[platform] || [];
+    const isOfficialStore = allowedDomains.some((domain) => hostname === domain || hostname.endsWith(`.${domain}`));
     const pathname = parsed.pathname.toLowerCase();
-    const hasSearchTerm = !!parsed.searchParams.get('q') || !!parsed.searchParams.get('query');
+    const hasSearchTerm = Boolean(parsed.searchParams.get('q') || parsed.searchParams.get('query') || parsed.searchParams.get('text'));
 
-    if (pathname === '/' || pathname === '/instamart' || pathname === '/ps/' || (pathname === '/search' && !hasSearchTerm)) {
+    if (!isOfficialStore || parsed.protocol !== 'https:' || pathname === '/' ||
+      (platform === 'Instamart' && pathname === '/instamart' && !hasSearchTerm)) {
       return fallback;
     }
   } catch (error) {
@@ -194,6 +232,14 @@ function normalizeItem(raw, index = 0, query = '') {
 
 function mapPlatform(source = '') {
   const text = String(source).toLowerCase();
+  if (text.includes('amazon')) return 'Amazon';
+  if (text.includes('flipkart')) return 'Flipkart';
+  if (text.includes('myntra')) return 'Myntra';
+  if (text.includes('ajio')) return 'Ajio';
+  if (text.includes('croma')) return 'Croma';
+  if (text.includes('reliance digital') || text.includes('reliancedigital')) return 'Reliance Digital';
+  if (text.includes('tata cliq') || text.includes('tatacliq')) return 'Tata CLiQ';
+  if (text.includes('nykaa')) return 'Nykaa';
   if (text.includes('blinkit')) return 'Blinkit';
   if (text.includes('zepto')) return 'Zepto';
   if (text.includes('swiggy') || text.includes('instamart')) return 'Instamart';
@@ -201,7 +247,7 @@ function mapPlatform(source = '') {
   return 'Marketplace';
 }
 
-async function fetchSerpApiResults(query, limit) {
+async function fetchSerpApiPage(query, start) {
   if (!SERPAPI_KEY) {
     return [];
   }
@@ -212,7 +258,8 @@ async function fetchSerpApiResults(query, limit) {
     location: 'Bengaluru, Karnataka, India',
     hl: 'en',
     gl: 'in',
-    num: String(Math.min(Math.max(limit, 6), 50)),
+    num: String(SERPAPI_PAGE_SIZE),
+    start: String(start),
     api_key: SERPAPI_KEY,
   });
 
@@ -225,26 +272,54 @@ async function fetchSerpApiResults(query, limit) {
   const shoppingResults = Array.isArray(payload.shopping_results) ? payload.shopping_results : [];
   const organicResults = Array.isArray(payload.organic_results) ? payload.organic_results : [];
 
-  const candidates = [...shoppingResults, ...organicResults];
-  const normalized = candidates
-    .map((item, index) => {
-      const platform = mapPlatform(item.source || item.displayed_link || item.snippet || '');
+  return [...shoppingResults, ...organicResults];
+}
+
+async function fetchSerpApiResults(query, limit) {
+  if (!SERPAPI_KEY) {
+    return [];
+  }
+
+  const results = [];
+  const seen = new Set();
+
+  for (let page = 0; page < SERPAPI_MAX_PAGES && results.length < limit; page += 1) {
+    let candidates;
+    try {
+      candidates = await fetchSerpApiPage(query, page * SERPAPI_PAGE_SIZE);
+    } catch (error) {
+      if (results.length === 0) throw error;
+      console.warn(`[QuickCompare] SerpAPI page ${page + 1} failed; returning ${results.length} results:`, error.message);
+      break;
+    }
+    if (candidates.length === 0) break;
+
+    candidates.forEach((item) => {
+      const platform = mapPlatform([item.source, item.displayed_link, item.link].filter(Boolean).join(' '));
+      if (platform === 'Marketplace') return;
+
       const formatted = normalizeItem({
         name: item.title || item.name,
         price: item.price || item.extracted_price || item.lowest_price,
         originalPrice: item.compare_at_price || item.original_price || item.price,
         platform,
-        image: item.thumbnail || item.image || item.thumbnail_url || item.img || item.link,
+        image: item.thumbnail || item.image || item.thumbnail_url || item.img,
         quantity: item.attributes?.find((attr) => attr.name?.toLowerCase().includes('weight') || attr.name?.toLowerCase().includes('size'))?.value || item.product_type || '',
         eta: item.delivery || item.shipping || '10-20 mins',
         inStock: item.in_stock !== false,
         productUrl: item.link || item.product_url || item.source_url || OFFICIAL_SITE_MAP[platform] || 'https://www.google.com/search?q=' + encodeURIComponent(query),
-      }, index, query);
-      return formatted;
-    })
-    .filter(Boolean);
+      }, results.length, query);
 
-  return normalized.slice(0, limit);
+      if (!formatted) return;
+      const key = `${formatted.platform}|${formatted.name.toLowerCase()}|${formatted.price}|${formatted.productUrl}`;
+      if (seen.has(key)) return;
+
+      seen.add(key);
+      results.push(formatted);
+    });
+  }
+
+  return results.slice(0, limit);
 }
 
 function getFallbackResults(query, limit = 48) {
@@ -280,37 +355,37 @@ function getFallbackResults(query, limit = 48) {
   return generated.filter(Boolean);
 }
 
-async function searchProducts(query, limit = 48) {
+async function searchProducts(query, limit = PRODUCT_RESULT_LIMIT) {
   const safeQuery = String(query || '').trim();
-  if (!safeQuery) return [];
+  if (!safeQuery) return { items: [], source: 'empty' };
 
   try {
     const serpResults = await fetchSerpApiResults(safeQuery, limit);
     if (serpResults.length > 0) {
-      return serpResults;
+      return { items: serpResults, source: 'live' };
     }
   } catch (error) {
     console.warn('[QuickCompare] SerpAPI lookup failed:', error.message);
   }
 
-  return getFallbackResults(safeQuery, limit);
+  return { items: getFallbackResults(safeQuery, limit), source: 'fallback' };
 }
 
 app.get('/api/search', async (req, res) => {
   const query = String(req.query.q || '').trim();
-  const limit = 48;
+  const limit = PRODUCT_RESULT_LIMIT;
 
   if (!query) {
     return res.json({ items: [], meta: { query: '', source: 'empty' } });
   }
 
   try {
-    const items = await searchProducts(query, limit);
+    const { items, source } = await searchProducts(query, limit);
     return res.json({
       items,
       meta: {
         query,
-        source: SERPAPI_KEY ? 'live' : 'fallback',
+        source,
         platformCount: new Set(items.map((item) => item.platform)).size,
       },
     });

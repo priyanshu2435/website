@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QuickCompare - Real-time Quick-Commerce Comparison</title>
+  <title>PriceMatch - Compare Prices Across Online Stores</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -19,14 +19,14 @@
       <div class="search-box">
         <div class="search-inner">
           <i class="fa-solid fa-magnifying-glass"></i>
-          <input type="text" id="searchInput" placeholder="Search products (press Enter)..." autocomplete="off" />
+          <input type="text" id="searchInput" placeholder="Search a product across online stores..." autocomplete="off" />
           <button id="searchBtn">Search</button>
         </div>
       </div>
 
       <div class="source-badge" id="sourceBadge">
         <i class="fa-solid fa-signal"></i>
-        <span id="sourceText">Live API Mode</span>
+        <span id="sourceText">Search to compare prices</span>
       </div>
     </div>
   </header>
@@ -35,7 +35,7 @@
     <!-- Sidebar Filters -->
     <aside class="sidebar">
       <div class="filter-group">
-        <div class="filter-title">Quick Delivery Platforms</div>
+        <div class="filter-title">Stores</div>
         <div class="filter-list" id="platformFilters">
           <label class="filter-item">
             <span class="filter-label"><input type="checkbox" value="Zepto" class="filter-platform" checked> Zepto</span>
@@ -48,6 +48,30 @@
           </label>
           <label class="filter-item">
             <span class="filter-label"><input type="checkbox" value="BigBasket" class="filter-platform" checked> BigBasket</span>
+          </label>
+          <label class="filter-item">
+            <span class="filter-label"><input type="checkbox" value="Amazon" class="filter-platform" checked> Amazon</span>
+          </label>
+          <label class="filter-item">
+            <span class="filter-label"><input type="checkbox" value="Flipkart" class="filter-platform" checked> Flipkart</span>
+          </label>
+          <label class="filter-item">
+            <span class="filter-label"><input type="checkbox" value="Myntra" class="filter-platform" checked> Myntra</span>
+          </label>
+          <label class="filter-item">
+            <span class="filter-label"><input type="checkbox" value="Ajio" class="filter-platform" checked> AJIO</span>
+          </label>
+          <label class="filter-item">
+            <span class="filter-label"><input type="checkbox" value="Croma" class="filter-platform" checked> Croma</span>
+          </label>
+          <label class="filter-item">
+            <span class="filter-label"><input type="checkbox" value="Reliance Digital" class="filter-platform" checked> Reliance Digital</span>
+          </label>
+          <label class="filter-item">
+            <span class="filter-label"><input type="checkbox" value="Tata CLiQ" class="filter-platform" checked> Tata CLiQ</span>
+          </label>
+          <label class="filter-item">
+            <span class="filter-label"><input type="checkbox" value="Nykaa" class="filter-platform" checked> Nykaa</span>
           </label>
         </div>
       </div>
@@ -72,7 +96,7 @@
     <!-- Main Results View -->
     <main class="content-area">
       <div class="toolbar">
-        <div class="results-info" id="resultsCount">Type query & press <b>Enter</b> to fetch live prices</div>
+        <div class="results-info" id="resultsCount">Search once to compare available prices across stores</div>
         <select class="sort-select" id="sortSelect">
           <option value="relevance">Sort: Relevance</option>
           <option value="price_asc">Price: Low to High</option>
@@ -80,6 +104,14 @@
           <option value="discount_desc">Highest Discount</option>
         </select>
       </div>
+
+      <section class="comparison-intro" aria-labelledby="comparisonTitle">
+        <div class="comparison-icon"><i class="fa-solid fa-scale-balanced" aria-hidden="true"></i></div>
+        <div>
+          <h1 id="comparisonTitle">Compare prices across stores</h1>
+          <p>Find an offer that works for you, then open the product directly on the store's website.</p>
+        </div>
+      </section>
 
       <div id="statusContainer"></div>
       <div class="product-grid" id="productGrid"></div>
