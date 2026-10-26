@@ -3,120 +3,207 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PriceMatch - Compare Prices Across Online Stores</title>
+  <meta name="theme-color" content="#f7f8f4">
+  <meta name="description" content="Compare prices from your favourite online stores and quick-commerce apps in one place.">
+  <title>PriceMatch — Find the best price, wherever you shop</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-  <header>
+  <header class="site-header">
     <div class="header-content">
-      <a href="#" class="logo">
-        <i class="fa-solid fa-bolt"></i>
-        <span>PriceMatch</span>
+      <a href="#" class="logo" aria-label="PriceMatch home">
+        <span class="logo-mark"><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i></span>
+        <span>price<span class="logo-accent">match</span></span>
       </a>
-      
-      <div class="search-box">
-        <div class="search-inner">
-          <i class="fa-solid fa-magnifying-glass"></i>
-          <input type="text" id="searchInput" placeholder="Search a product across online stores..." autocomplete="off" />
-          <button id="searchBtn">Search</button>
-        </div>
-      </div>
-
-      <div class="source-badge" id="sourceBadge">
-        <i class="fa-solid fa-signal"></i>
-        <span id="sourceText">Search to compare prices</span>
-      </div>
+      <div class="header-note"><span class="live-dot"></span> One search. Better choices.</div>
+      <nav class="header-actions" aria-label="Main navigation">
+        <a class="header-help" href="#how-it-works">How it works <i class="fa-solid fa-arrow-down" aria-hidden="true"></i></a>
+        <button class="account-button" id="accountButton" type="button"><i class="fa-regular fa-user" aria-hidden="true"></i><span>Sign in</span></button>
+      </nav>
     </div>
   </header>
 
-  <div class="app-container">
-    <!-- Sidebar Filters -->
-    <aside class="sidebar">
-      <div class="filter-group">
-        <div class="filter-title">Stores</div>
-        <div class="filter-list" id="platformFilters">
-          <label class="filter-item">
-            <span class="filter-label"><input type="checkbox" value="Zepto" class="filter-platform" checked> Zepto</span>
-          </label>
-          <label class="filter-item">
-            <span class="filter-label"><input type="checkbox" value="Blinkit" class="filter-platform" checked> Blinkit</span>
-          </label>
-          <label class="filter-item">
-            <span class="filter-label"><input type="checkbox" value="Instamart" class="filter-platform" checked> Instamart</span>
-          </label>
-          <label class="filter-item">
-            <span class="filter-label"><input type="checkbox" value="BigBasket" class="filter-platform" checked> BigBasket</span>
-          </label>
-          <label class="filter-item">
-            <span class="filter-label"><input type="checkbox" value="Amazon" class="filter-platform" checked> Amazon</span>
-          </label>
-          <label class="filter-item">
-            <span class="filter-label"><input type="checkbox" value="Flipkart" class="filter-platform" checked> Flipkart</span>
-          </label>
-          <label class="filter-item">
-            <span class="filter-label"><input type="checkbox" value="Myntra" class="filter-platform" checked> Myntra</span>
-          </label>
-          <label class="filter-item">
-            <span class="filter-label"><input type="checkbox" value="Ajio" class="filter-platform" checked> AJIO</span>
-          </label>
-          <label class="filter-item">
-            <span class="filter-label"><input type="checkbox" value="Croma" class="filter-platform" checked> Croma</span>
-          </label>
-          <label class="filter-item">
-            <span class="filter-label"><input type="checkbox" value="Reliance Digital" class="filter-platform" checked> Reliance Digital</span>
-          </label>
-          <label class="filter-item">
-            <span class="filter-label"><input type="checkbox" value="Tata CLiQ" class="filter-platform" checked> Tata CLiQ</span>
-          </label>
-          <label class="filter-item">
-            <span class="filter-label"><input type="checkbox" value="Nykaa" class="filter-platform" checked> Nykaa</span>
-          </label>
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="eyebrow-line"></span> A smarter way to shop in India</div>
+        <h1>Good finds.<br><span>Better prices.</span></h1>
+        <p>Compare your options across stores, then pick the deal that feels right.</p>
+      </div>
+
+      <div class="mode-section">
+        <div class="mode-heading">
+          <span class="mode-step">01</span>
+          <div>
+            <h2>What are you shopping for?</h2>
+            <p>Choose where you want us to look</p>
+          </div>
+        </div>
+
+        <div class="mode-options" role="group" aria-label="Choose shopping type">
+          <button class="mode-card is-active" type="button" data-mode="ecommerce" aria-pressed="true">
+            <span class="mode-icon ecommerce-icon"><i class="fa-solid fa-bag-shopping" aria-hidden="true"></i></span>
+            <span class="mode-card-copy">
+              <strong>Online shopping</strong>
+              <span>Amazon, Flipkart, Myntra & more</span>
+            </span>
+            <span class="mode-check"><i class="fa-solid fa-check" aria-hidden="true"></i></span>
+          </button>
+          <button class="mode-card" type="button" data-mode="quick" aria-pressed="false">
+            <span class="mode-icon quick-icon"><i class="fa-solid fa-bolt" aria-hidden="true"></i></span>
+            <span class="mode-card-copy">
+              <strong>Quick delivery</strong>
+              <span>Everyday essentials in minutes</span>
+            </span>
+            <span class="delivery-pill">~10 min</span>
+          </button>
+        </div>
+
+        <div class="search-panel">
+          <label class="search-label" for="searchInput"><span id="searchPrompt">Search across your favourite stores</span><span>02</span></label>
+          <div class="search-inner">
+            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+            <input type="search" id="searchInput" placeholder="Try “wireless headphones”" autocomplete="off">
+            <button id="searchBtn" type="button">Find my deal <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+          </div>
+          <div class="popular-searches">
+            <span>Popular:</span>
+            <button type="button" class="suggestion" data-query="wireless headphones">Headphones</button>
+            <button type="button" class="suggestion" data-query="smartphone">Smartphones</button>
+            <button type="button" class="suggestion" data-query="milk">Milk</button>
+            <button type="button" class="suggestion" data-query="snacks">Snacks</button>
+          </div>
         </div>
       </div>
 
-      <div class="filter-group">
-        <div class="filter-title">Max Price (₹)</div>
-        <div class="price-inputs">
-          <input type="number" id="maxPriceInput" placeholder="e.g. 500" min="0">
-        </div>
-      </div>
+      <div class="hero-decoration decoration-one" aria-hidden="true"></div>
+      <div class="hero-decoration decoration-two" aria-hidden="true"></div>
+    </section>
 
-      <div class="filter-group">
-        <div class="filter-title">Availability</div>
-        <div class="filter-list">
-          <label class="filter-item">
-            <span class="filter-label"><input type="checkbox" id="inStockOnly"> In Stock Only</span>
-          </label>
-        </div>
-      </div>
-    </aside>
+    <section class="trust-strip" aria-label="Shopping benefits">
+      <div><span class="trust-icon"><i class="fa-solid fa-layer-group" aria-hidden="true"></i></span><span>Stores side by side</span></div>
+      <span class="trust-divider"></span>
+      <div><span class="trust-icon"><i class="fa-solid fa-indian-rupee-sign" aria-hidden="true"></i></span><span>Spot prices at a glance</span></div>
+      <span class="trust-divider"></span>
+      <div><span class="trust-icon"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></span><span>Shop directly with the store</span></div>
+    </section>
 
-    <!-- Main Results View -->
-    <main class="content-area">
-      <div class="toolbar">
-        <div class="results-info" id="resultsCount">Search once to compare available prices across stores</div>
-        <select class="sort-select" id="sortSelect">
-          <option value="relevance">Sort: Relevance</option>
-          <option value="price_asc">Price: Low to High</option>
-          <option value="price_desc">Price: High to Low</option>
-          <option value="discount_desc">Highest Discount</option>
-        </select>
-      </div>
-
-      <section class="comparison-intro" aria-labelledby="comparisonTitle">
-        <div class="comparison-icon"><i class="fa-solid fa-scale-balanced" aria-hidden="true"></i></div>
+    <section class="results-section" aria-labelledby="comparisonTitle">
+      <div class="results-heading">
         <div>
-          <h1 id="comparisonTitle">Compare prices across stores</h1>
-          <p>Find an offer that works for you, then open the product directly on the store's website.</p>
+          <div class="section-kicker"><span class="live-dot"></span> YOUR COMPARISON</div>
+          <h2 id="comparisonTitle">Let’s find your best match</h2>
+          <p id="comparisonDescription">Choose a shopping type and search to see offers from trusted stores.</p>
         </div>
+        <div class="source-badge" id="sourceBadge" aria-live="polite">
+          <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+          <span id="sourceText">Ready when you are</span>
+        </div>
+      </div>
+
+      <div class="app-container">
+        <aside class="sidebar" aria-label="Product filters">
+          <div class="sidebar-heading"><span>Refine results</span><i class="fa-solid fa-sliders" aria-hidden="true"></i></div>
+          <div class="filter-group">
+            <div class="filter-title">Stores</div>
+            <div class="filter-list" id="platformFilters"></div>
+          </div>
+          <div class="filter-group">
+            <label class="filter-title" for="maxPriceInput">Maximum price</label>
+            <div class="price-input-wrap"><span>₹</span><input type="number" id="maxPriceInput" placeholder="Any price" min="0" inputmode="numeric"></div>
+          </div>
+          <div class="filter-group availability-filter">
+            <label class="stock-toggle" for="inStockOnly">
+              <span><strong>In stock only</strong><small>Hide unavailable items</small></span>
+              <input type="checkbox" id="inStockOnly">
+              <span class="toggle-track" aria-hidden="true"></span>
+            </label>
+          </div>
+        </aside>
+
+        <div class="content-area">
+          <div class="toolbar">
+            <div class="results-info" id="resultsCount">Search once to compare available prices across stores</div>
+            <label class="sort-control" for="sortSelect"><i class="fa-solid fa-arrow-down-wide-short" aria-hidden="true"></i>
+              <select class="sort-select" id="sortSelect" aria-label="Sort products">
+                <option value="relevance">Recommended</option>
+                <option value="price_asc">Price: low to high</option>
+                <option value="price_desc">Price: high to low</option>
+                <option value="discount_desc">Biggest savings</option>
+              </select>
+            </label>
+          </div>
+          <div id="statusContainer" aria-live="polite"></div>
+          <div class="product-grid" id="productGrid"></div>
+        </div>
+      </div>
+    </section>
+
+    <footer id="how-it-works">
+      <span class="footer-mark"><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i></span>
+      <p>Compare with confidence. Buy from the store you trust.</p>
+      <span class="footer-note">Prices and availability may vary by location.</span>
+    </footer>
+  </main>
+
+  <dialog class="account-dialog" id="accountDialog" aria-labelledby="accountTitle">
+    <div class="account-panel">
+      <button class="dialog-close" id="closeAccountDialog" type="button" aria-label="Close account window"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+      <div class="account-brand"><span class="logo-mark"><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i></span><span>price<span class="logo-accent">match</span></span></div>
+      <section id="authView">
+        <div class="account-kicker"><i class="fa-solid fa-lock" aria-hidden="true"></i> YOUR SHOPPING, SAVED</div>
+        <h2 id="accountTitle">Welcome back</h2>
+        <p class="account-intro" id="authDescription">Sign in to save products and get email alerts when prices drop.</p>
+        <form id="authForm" class="account-form">
+          <label for="authEmail">Email address</label>
+          <input id="authEmail" name="email" type="email" autocomplete="email" maxlength="254" placeholder="you@example.com" required>
+          <label for="authPassword">Password</label>
+          <input id="authPassword" name="password" type="password" autocomplete="current-password" minlength="10" maxlength="72" placeholder="At least 10 characters" required>
+          <div id="confirmPasswordField" hidden>
+            <label for="confirmPassword">Confirm password</label>
+            <input id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" minlength="10" maxlength="72" placeholder="Enter your password again">
+          </div>
+          <button class="account-submit" id="authSubmit" type="submit">Sign in <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+        </form>
+        <p class="account-switch"><span id="authSwitchPrompt">New to PriceMatch?</span> <button id="authSwitch" type="button">Create an account</button></p>
+        <p class="account-status" id="accountStatus" role="status" aria-live="polite"></p>
+        <p class="account-privacy"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Your password is securely hashed. Your account and alerts are stored privately.</p>
       </section>
 
-      <div id="statusContainer"></div>
-      <div class="product-grid" id="productGrid"></div>
-    </main>
-  </div>
+      <section id="otpVerificationView" hidden>
+        <div class="account-kicker"><i class="fa-solid fa-envelope" aria-hidden="true"></i> VERIFY YOUR EMAIL</div>
+        <h2 id="otpTitle">Check your inbox</h2>
+        <p class="account-intro">Enter the 6-digit code we sent to your email. The code expires in 5 minutes.</p>
+        <form id="otpForm" class="account-form">
+          <label for="otpInput">6-digit verification code</label>
+          <input id="otpInput" name="otp" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" minlength="6" maxlength="6" placeholder="Enter OTP" required>
+          <button class="account-submit" id="verifyOtpButton" type="submit">Verify email <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+        </form>
+        <button class="otp-resend" id="resendOtpButton" type="button">Resend code</button>
+        <p class="account-status" id="otpStatus" role="status" aria-live="polite"></p>
+      </section>
+
+      <section id="dashboardView" hidden>
+        <div class="account-kicker"><i class="fa-solid fa-bell" aria-hidden="true"></i> PRICE WATCHLIST</div>
+        <h2 id="dashboardTitle">Your price alerts</h2>
+        <p class="account-intro" id="accountEmail"></p>
+        <div class="verification-notice" id="verificationNotice" hidden>
+          <p>Verify your email before creating alerts. Check your inbox for a 6-digit code.</p>
+          <button id="resendVerification" type="button">Resend verification code</button>
+        </div>
+        <div class="mail-setup-notice" id="mailSetupNotice" hidden>
+          Email delivery isn’t configured yet. Add SMTP settings to the server environment to verify addresses and send alerts.
+        </div>
+        <div class="alert-list" id="alertList"></div>
+        <button class="account-logout" id="logoutButton" type="button">Sign out</button>
+        <p class="account-status" id="dashboardStatus" role="status" aria-live="polite"></p>
+      </section>
+    </div>
+  </dialog>
 
   <script src="script.js"></script>
 </body>

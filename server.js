@@ -6,14 +6,22 @@
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
+const {
+  initializeAccountDatabase,
+  isEmailConfigured,
+  registerAccountRoutes,
+  startPriceAlertMonitor
+} = require('./account-service');
 
 const PORT = Number(process.env.PORT) || 3000;
 const SERPAPI_KEY = (process.env.SERPAPI_KEY || '').trim();
-const PRODUCT_RESULT_LIMIT = 100;
-const SERPAPI_PAGE_SIZE = 50;
+const PRODUCT_RESULT_LIMIT = 200;
+const SERPAPI_PAGE_SIZE = 100;
 const SERPAPI_MAX_PAGES = 2;
 
 const app = express();
+app.disable('x-powered-by');
+app.use(express.json({ limit: '16kb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 const OFFICIAL_SITE_MAP = {
@@ -146,6 +154,83 @@ const FALLBACK_ITEMS = [
     eta: '10-15 mins',
     inStock: true,
     productUrl: OFFICIAL_SITE_MAP.Zepto
+  },
+  {
+    name: 'Wireless Bluetooth Headphones',
+    price: 1499,
+    originalPrice: 2499,
+    platform: 'Amazon',
+    image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=900&q=80',
+    quantity: '1 unit',
+    eta: '2-4 days',
+    inStock: true,
+    productUrl: OFFICIAL_SITE_MAP.Amazon
+  },
+  {
+    name: 'Wireless Noise Cancelling Headphones',
+    price: 1599,
+    originalPrice: 2799,
+    platform: 'Flipkart',
+    image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=900&q=80',
+    quantity: '1 unit',
+    eta: '2-5 days',
+    inStock: true,
+    productUrl: OFFICIAL_SITE_MAP.Flipkart
+  },
+  {
+    name: 'Everyday Running Sneakers',
+    price: 1899,
+    originalPrice: 2999,
+    platform: 'Myntra',
+    image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=80',
+    quantity: '1 pair',
+    eta: '2-5 days',
+    inStock: true,
+    productUrl: OFFICIAL_SITE_MAP.Myntra
+  },
+  {
+    name: 'Classic Casual Sneakers',
+    price: 1999,
+    originalPrice: 3499,
+    platform: 'Ajio',
+    image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=80',
+    quantity: '1 pair',
+    eta: '3-6 days',
+    inStock: true,
+    productUrl: OFFICIAL_SITE_MAP.Ajio
+  },
+  {
+    name: 'Portable Bluetooth Speaker',
+    price: 2199,
+    originalPrice: 3299,
+    platform: 'Croma',
+    image: 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&w=900&q=80',
+    quantity: '1 unit',
+    eta: '2-4 days',
+    inStock: true,
+    productUrl: OFFICIAL_SITE_MAP.Croma
+  },
+  {
+    name: 'Daily Hydration Face Serum',
+    price: 499,
+    originalPrice: 699,
+    platform: 'Nykaa',
+    image: 'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&fit=crop&w=900&q=80',
+    quantity: '30 ml',
+    eta: '2-5 days',
+    inStock: true,
+    productUrl: OFFICIAL_SITE_MAP.Nykaa
+  },
+  {
+    name: 'Smart Fitness Watch',
+    price: 2499,
+    originalPrice: 3999,
+    platform: 'Reliance Digital',
+    image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=900&q=80',
+    quantity: '1 unit',
+    eta: '2-5 days',
+    inStock: true,
+    productUrl: OFFICIAL_SITE_MAP['Reliance Digital']
   }
 ];
 
@@ -209,6 +294,7 @@ function normalizeItem(raw, index = 0, query = '') {
   const quantity = cleanText(raw.quantity || raw.size || raw.unit || raw.packSize || raw.pack_size || '');
   const image = raw.image || raw.image_url || raw.img || raw.thumbnail || raw.productImage || 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=900&q=80';
   const productUrl = resolveOfficialUrl(raw, platform, query);
+  const defaultEta = ['Blinkit', 'Zepto', 'Instamart', 'BigBasket'].includes(platform) ? '10-20 mins' : 'Delivery varies';
 
   if (!name || price <= 0) return null;
 
@@ -224,7 +310,7 @@ function normalizeItem(raw, index = 0, query = '') {
     platform,
     image,
     quantity: quantity || '1 unit',
-    eta: raw.eta || raw.delivery || raw.deliveryTime || raw.etaText || '10-20 mins',
+    eta: raw.eta || raw.delivery || raw.deliveryTime || raw.etaText || defaultEta,
     inStock: raw.inStock !== false,
     productUrl,
   };
@@ -253,9 +339,9 @@ async function fetchSerpApiPage(query, start) {
   }
 
   const params = new URLSearchParams({
-    engine: 'google_shopping',
+    engine: 'google_shopping_light',
     q: query,
-    location: 'Bengaluru, Karnataka, India',
+    location: 'Delhi, Delhi, India',
     hl: 'en',
     gl: 'in',
     num: String(SERPAPI_PAGE_SIZE),
@@ -305,7 +391,7 @@ async function fetchSerpApiResults(query, limit) {
         platform,
         image: item.thumbnail || item.image || item.thumbnail_url || item.img,
         quantity: item.attributes?.find((attr) => attr.name?.toLowerCase().includes('weight') || attr.name?.toLowerCase().includes('size'))?.value || item.product_type || '',
-        eta: item.delivery || item.shipping || '10-20 mins',
+        eta: item.delivery || item.shipping || '',
         inStock: item.in_stock !== false,
         productUrl: item.link || item.product_url || item.source_url || OFFICIAL_SITE_MAP[platform] || 'https://www.google.com/search?q=' + encodeURIComponent(query),
       }, results.length, query);
@@ -398,14 +484,41 @@ app.get('/api/search', async (req, res) => {
   }
 });
 
-app.get('/api/health', (_req, res) => {
-  res.json({
-    status: 'ok',
-    hasSerpKey: Boolean(SERPAPI_KEY),
-    env: process.env.NODE_ENV || 'development',
-  });
-});
+async function startServer() {
+  await initializeAccountDatabase();
 
-app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+  const fetchLiveItemsForAlerts = async (query) => {
+    if (!SERPAPI_KEY) return [];
+    return fetchSerpApiResults(query, PRODUCT_RESULT_LIMIT);
+  };
+
+  registerAccountRoutes(app, {
+    fetchLiveItems: fetchLiveItemsForAlerts,
+    officialProductUrl: buildOfficialProductUrl
+  });
+  startPriceAlertMonitor(fetchLiveItemsForAlerts, buildOfficialProductUrl);
+
+  app.get('/api/health', (_req, res) => {
+    res.json({
+      status: 'ok',
+      hasSerpKey: Boolean(SERPAPI_KEY),
+      emailConfigured: isEmailConfigured(),
+      env: process.env.NODE_ENV || 'development',
+    });
+  });
+
+  app.use((error, _req, res, _next) => {
+    console.error('[QuickCompare] Request failed:', error);
+    if (res.headersSent) return;
+    return res.status(500).json({ error: 'The request could not be completed. Please try again.' });
+  });
+
+  app.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}`);
+  });
+}
+
+startServer().catch((error) => {
+  console.error('[QuickCompare] Server startup failed:', error);
+  process.exitCode = 1;
 });

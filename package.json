@@ -16,12 +16,17 @@
     "bigbasket"
   ],
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   },
   "license": "MIT",
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "cheerio": "^1.2.0",
     "dotenv": "^16.6.1",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "express-rate-limit": "^8.7.1",
+    "express-session": "^1.19.0",
+    "nodemailer": "^10.2.1",
+    "sql.js": "^1.15.1"
   }
 }
