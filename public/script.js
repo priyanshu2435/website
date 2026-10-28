@@ -40,7 +40,6 @@ const maxPriceInput = document.getElementById('maxPriceInput');
 const inStockOnly = document.getElementById('inStockOnly');
 const platformFilters = document.getElementById('platformFilters');
 const sourceText = document.getElementById('sourceText');
-const sourceBadge = document.getElementById('sourceBadge');
 const comparisonTitle = document.getElementById('comparisonTitle');
 const comparisonDescription = document.getElementById('comparisonDescription');
 const searchPrompt = document.getElementById('searchPrompt');
@@ -149,28 +148,34 @@ async function executeApiSearch() {
   }
 
   showStatus('loading', `Finding ${state.mode === 'quick' ? 'quick delivery' : 'online store'} prices for “${query}”…`);
+  state.rawItems = [];
+  state.filteredItems = [];
   productGrid.innerHTML = '';
+  resultsCount.textContent = 'Searching live stores…';
   searchBtn.disabled = true;
 
   try {
     const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-    if (!response.ok) {
-      throw new Error(`Search request failed with status ${response.status}`);
-    }
     const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error || `Search request failed with status ${response.status}`);
+    }
     if (data.error) {
       showStatus('error', `Error fetching data: ${data.error}`);
       return;
     }
 
-    const isLive = data.meta?.source === 'live';
-    sourceText.textContent = isLive ? 'Live store prices' : 'Example prices';
-    sourceBadge.classList.toggle('is-mock', !isLive);
+    sourceText.textContent = 'Live store prices';
     state.rawItems = Array.isArray(data.items) ? data.items : [];
     applyFiltersAndRender(query);
   } catch (error) {
     console.error(error);
-    showStatus('error', 'We could not reach the search service. Please try again.');
+    state.rawItems = [];
+    state.filteredItems = [];
+    productGrid.innerHTML = '';
+    resultsCount.textContent = 'No live offers available';
+    sourceText.textContent = 'Live search unavailable';
+    showStatus('error', error.message || 'We could not reach the search service. Please try again.');
   } finally {
     searchBtn.disabled = false;
   }

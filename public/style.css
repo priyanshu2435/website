@@ -568,15 +568,7 @@ select {
   font-size: 11px;
 }
 
-.source-badge.is-mock {
-  border-color: #f4e7d2;
-  background: #fffaf1;
-  color: #906b32;
-}
 
-.source-badge.is-mock > i {
-  color: #d0912c;
-}
 
 .app-container {
   display: grid;

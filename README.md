@@ -11,6 +11,8 @@ Requires Node.js 20 or later.
 3. Start the app with `npm start`.
 4. Open `http://localhost:3000`.
 
+Search results come only from the live provider. If the provider is unavailable or returns no matches, PriceMatch shows an error or empty result state instead of sample products.
+
 The default SQLite database is stored at `data/pricematch.sqlite`. Keep this file on persistent storage: it holds accounts, email-verification tokens, saved alerts, sessions, and the generated local session-signing key. To use a different location, set `DATABASE_PATH`.
 
 ## Email and price alerts

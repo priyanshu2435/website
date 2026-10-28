@@ -88,152 +88,6 @@ function buildOfficialProductUrl(platform, query, productName) {
   }
 }
 
-const FALLBACK_ITEMS = [
-  {
-    name: 'Amul Taaza Toned Milk 1 L',
-    price: 68,
-    originalPrice: 72,
-    platform: 'Blinkit',
-    image: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&w=900&q=80',
-    quantity: '1 L',
-    eta: '10-15 mins',
-    inStock: true,
-    productUrl: OFFICIAL_SITE_MAP.Blinkit
-  },
-  {
-    name: 'Nandini Good Life Milk 1 L',
-    price: 64,
-    originalPrice: 70,
-    platform: 'Zepto',
-    image: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&w=900&q=80',
-    quantity: '1 L',
-    eta: '12-18 mins',
-    inStock: true,
-    productUrl: OFFICIAL_SITE_MAP.Zepto
-  },
-  {
-    name: 'A2 Ghee 500 g',
-    price: 450,
-    originalPrice: 520,
-    platform: 'Instamart',
-    image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=900&q=80',
-    quantity: '500 g',
-    eta: '15-20 mins',
-    inStock: true,
-    productUrl: OFFICIAL_SITE_MAP.Instamart
-  },
-  {
-    name: 'Organic Brown Rice 5 kg',
-    price: 380,
-    originalPrice: 430,
-    platform: 'BigBasket',
-    image: 'https://images.unsplash.com/photo-1518843875459-f738682238a6?auto=format&fit=crop&w=900&q=80',
-    quantity: '5 kg',
-    eta: '18-25 mins',
-    inStock: true,
-    productUrl: OFFICIAL_SITE_MAP.BigBasket
-  },
-  {
-    name: 'Tomato 1 kg',
-    price: 42,
-    originalPrice: 48,
-    platform: 'Blinkit',
-    image: 'https://images.unsplash.com/photo-1546094096-0df4bcaaa337?auto=format&fit=crop&w=900&q=80',
-    quantity: '1 kg',
-    eta: '8-12 mins',
-    inStock: true,
-    productUrl: OFFICIAL_SITE_MAP.Blinkit
-  },
-  {
-    name: 'Bananas 1 dozen',
-    price: 58,
-    originalPrice: 68,
-    platform: 'Zepto',
-    image: 'https://images.unsplash.com/photo-1570586437263-ab629fccc818?auto=format&fit=crop&w=900&q=80',
-    quantity: '1 dozen',
-    eta: '10-15 mins',
-    inStock: true,
-    productUrl: OFFICIAL_SITE_MAP.Zepto
-  },
-  {
-    name: 'Wireless Bluetooth Headphones',
-    price: 1499,
-    originalPrice: 2499,
-    platform: 'Amazon',
-    image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=900&q=80',
-    quantity: '1 unit',
-    eta: '2-4 days',
-    inStock: true,
-    productUrl: OFFICIAL_SITE_MAP.Amazon
-  },
-  {
-    name: 'Wireless Noise Cancelling Headphones',
-    price: 1599,
-    originalPrice: 2799,
-    platform: 'Flipkart',
-    image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=900&q=80',
-    quantity: '1 unit',
-    eta: '2-5 days',
-    inStock: true,
-    productUrl: OFFICIAL_SITE_MAP.Flipkart
-  },
-  {
-    name: 'Everyday Running Sneakers',
-    price: 1899,
-    originalPrice: 2999,
-    platform: 'Myntra',
-    image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=80',
-    quantity: '1 pair',
-    eta: '2-5 days',
-    inStock: true,
-    productUrl: OFFICIAL_SITE_MAP.Myntra
-  },
-  {
-    name: 'Classic Casual Sneakers',
-    price: 1999,
-    originalPrice: 3499,
-    platform: 'Ajio',
-    image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=80',
-    quantity: '1 pair',
-    eta: '3-6 days',
-    inStock: true,
-    productUrl: OFFICIAL_SITE_MAP.Ajio
-  },
-  {
-    name: 'Portable Bluetooth Speaker',
-    price: 2199,
-    originalPrice: 3299,
-    platform: 'Croma',
-    image: 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&w=900&q=80',
-    quantity: '1 unit',
-    eta: '2-4 days',
-    inStock: true,
-    productUrl: OFFICIAL_SITE_MAP.Croma
-  },
-  {
-    name: 'Daily Hydration Face Serum',
-    price: 499,
-    originalPrice: 699,
-    platform: 'Nykaa',
-    image: 'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&fit=crop&w=900&q=80',
-    quantity: '30 ml',
-    eta: '2-5 days',
-    inStock: true,
-    productUrl: OFFICIAL_SITE_MAP.Nykaa
-  },
-  {
-    name: 'Smart Fitness Watch',
-    price: 2499,
-    originalPrice: 3999,
-    platform: 'Reliance Digital',
-    image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=900&q=80',
-    quantity: '1 unit',
-    eta: '2-5 days',
-    inStock: true,
-    productUrl: OFFICIAL_SITE_MAP['Reliance Digital']
-  }
-];
-
 function slugify(str) {
   return String(str)
     .toLowerCase()
@@ -408,53 +262,17 @@ async function fetchSerpApiResults(query, limit) {
   return results.slice(0, limit);
 }
 
-function getFallbackResults(query, limit = 48) {
-  const keyword = String(query || '').toLowerCase();
-  let filtered = FALLBACK_ITEMS;
-
-  if (keyword) {
-    filtered = FALLBACK_ITEMS.filter((item) => {
-      const haystack = `${item.name} ${item.platform}`.toLowerCase();
-      return haystack.includes(keyword);
-    });
-  }
-
-  const source = filtered.length ? filtered : FALLBACK_ITEMS;
-  const generated = [];
-
-  for (let i = 0; i < limit; i += 1) {
-    const item = source[i % source.length];
-    generated.push(normalizeItem({
-      ...item,
-      name: `${item.name} ${i > 0 ? `(${i + 1})` : ''}`.trim(),
-      price: item.price + (i % 4) * 7,
-      originalPrice: item.originalPrice + (i % 4) * 9,
-      platform: item.platform,
-      image: item.image,
-      quantity: item.quantity,
-      eta: item.eta,
-      inStock: item.inStock,
-      productUrl: item.productUrl,
-    }, i, query));
-  }
-
-  return generated.filter(Boolean);
-}
-
 async function searchProducts(query, limit = PRODUCT_RESULT_LIMIT) {
   const safeQuery = String(query || '').trim();
   if (!safeQuery) return { items: [], source: 'empty' };
 
   try {
     const serpResults = await fetchSerpApiResults(safeQuery, limit);
-    if (serpResults.length > 0) {
-      return { items: serpResults, source: 'live' };
-    }
+    return { items: serpResults, source: 'live' };
   } catch (error) {
     console.warn('[QuickCompare] SerpAPI lookup failed:', error.message);
+    throw error;
   }
-
-  return { items: getFallbackResults(safeQuery, limit), source: 'fallback' };
 }
 
 app.get('/api/search', async (req, res) => {
@@ -463,6 +281,14 @@ app.get('/api/search', async (req, res) => {
 
   if (!query) {
     return res.json({ items: [], meta: { query: '', source: 'empty' } });
+  }
+
+  if (!SERPAPI_KEY) {
+    return res.status(503).json({
+      error: 'Live product search is not configured. Set SERPAPI_KEY on the server.',
+      items: [],
+      meta: { query, source: 'unavailable' },
+    });
   }
 
   try {
@@ -477,9 +303,10 @@ app.get('/api/search', async (req, res) => {
     });
   } catch (error) {
     console.error('[QuickCompare] Search failed:', error);
-    return res.status(200).json({
-      items: getFallbackResults(query),
-      meta: { query, source: 'fallback', error: 'search_failed' },
+    return res.status(502).json({
+      error: 'Live product search is temporarily unavailable. Please try again later.',
+      items: [],
+      meta: { query, source: 'error' },
     });
   }
 });
